@@ -1,0 +1,291 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Palette revamped to the reference portfolio's dark-navy / violet / sky
+   scheme (dark: #11111b bg, #1a1a29 cards, #8000ff→#cf59e6 purple range,
+   #6bc5f8 sky accent; light: warm beige #ece7e1). */
+:root {
+  --bg: 236 231 225;
+  --surface: 246 241 234;
+  --fg: 24 24 34;
+  --muted: 92 92 106;
+  --border: 210 205 199;
+  --accent: 109 40 217;
+  --accent-fg: 255 255 255;
+  --signal: 14 116 199;
+  --hover: 228 222 214;
+}
+
+.dark {
+  --bg: 17 17 27;
+  --surface: 26 26 41;
+  --fg: 255 255 255;
+  --muted: 184 184 200;
+  --border: 42 42 58;
+  --accent: 139 92 246;
+  --accent-fg: 255 255 255;
+  --signal: 107 197 248;
+  --hover: 34 34 47;
+}
+
+* {
+  border-color: rgb(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  background-color: rgb(var(--bg));
+  color: rgb(var(--fg));
+  font-feature-settings: "ss01" 1, "cv01" 1;
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Theme-aware surfaces get the same crossfade so a toggle reads as one
+   coordinated transition rather than a flash of mismatched panels. */
+.theme-transition {
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::selection {
+  background-color: rgb(var(--accent) / 0.28);
+  color: rgb(var(--fg));
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.container-lab {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@screen sm {
+  .container-lab {
+    padding-inline: 2rem;
+  }
+}
+
+.label-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  color: rgb(var(--muted));
+}
+
+.hairline {
+  border: 1px solid rgb(var(--border));
+}
+
+.grid-bg {
+  background-image: var(--tw-gradient-grid, none);
+}
+
+@keyframes portal-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.12);
+  }
+}
+
+.portal-glow {
+  animation: portal-pulse 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portal-glow {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgb(var(--accent));
+  border-radius: 6px;
+}
+
+/* Gradient display type, echoing the reference's cyan→pink headings. */
+.text-gradient {
+  background-image: linear-gradient(90deg, #0e7490, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark .text-gradient {
+  background-image: linear-gradient(90deg, #b0f3f1, #cf59e6 55%, #6bc5f8);
+}
+
+/* Cursor spotlight for display words. The gradient is masked to a circle that
+   follows the pointer (`--mx`/`--my`) and whose radius (`--spot-r`) expands on
+   hover and retracts on leave, so the colour spreads out from under the cursor
+   and fades back naturally. Registered as a real length so the radius can be
+   transitioned. */
+@property --spot-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+.at-spot {
+  --mx: 50%;
+  --my: 50%;
+  --spot-r: 0px;
+  background-image: radial-gradient(
+      circle var(--spot-r) at var(--mx) var(--my),
+      #0e7490,
+      #7c3aed 45%,
+      #2563eb 82%,
+      transparent 100%
+    ),
+    linear-gradient(rgb(var(--fg)), rgb(var(--fg)));
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  transition: --spot-r 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.at-spot:hover {
+  --spot-r: 120px;
+}
+.dark .at-spot {
+  background-image: radial-gradient(
+      circle var(--spot-r) at var(--mx) var(--my),
+      #b0f3f1,
+      #cf59e6 45%,
+      #6bc5f8 82%,
+      transparent 100%
+    ),
+    linear-gradient(rgb(var(--fg)), rgb(var(--fg)));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .at-spot {
+    transition: none;
+  }
+}
+
+/* About: circular "orbit" diagram. The ring + dots + nodes rotate clockwise;
+   each node's label counter-rotates so the text stays upright. Hovering the
+   diagram pauses the spin and lights it up. */
+.about-orbit {
+  position: relative;
+  width: min(640px, 100%);
+  aspect-ratio: 1 / 1;
+  margin-inline: auto;
+}
+.about-orbit-spin {
+  position: absolute;
+  inset: 0;
+  animation: about-orbit-spin 60s linear infinite;
+  transform-origin: 50% 50%;
+}
+.about-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+.about-orbit-dot {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: rgb(var(--bg));
+  border: 2px solid rgb(var(--accent));
+  transform: translate(-50%, -50%);
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+}
+.about-node {
+  position: absolute;
+  width: min(200px, 34vw);
+  transform: translate(-50%, -50%);
+}
+.about-label {
+  animation: about-orbit-rev 60s linear infinite;
+}
+.about-card {
+  border: 1px solid rgb(var(--border));
+  background: rgb(var(--surface) / 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.about-ring {
+  transition: stroke 0.3s ease;
+}
+.about-orbit:hover .about-orbit-spin,
+.about-orbit:hover .about-label {
+  animation-play-state: paused;
+}
+.about-orbit:hover .about-ring {
+  stroke: rgb(var(--accent));
+}
+.about-orbit:hover .about-orbit-dot {
+  box-shadow: 0 0 16px 2px rgb(var(--accent) / 0.6);
+}
+.about-node:hover .about-card {
+  border-color: rgb(var(--accent));
+  box-shadow: 0 0 30px rgb(var(--accent) / 0.35);
+  transform: translateY(-2px);
+}
+
+@keyframes about-orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes about-orbit-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-orbit-spin,
+  .about-label {
+    animation: none;
+  }
+}
