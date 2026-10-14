@@ -45,7 +45,7 @@ export function ProjectsExplorer() {
   const [filter, setFilter] = React.useState<FilterValue>("all");
 
   return (
-    <div>
+    <div data-ambient-zone className="relative">
       <div className="container-lab flex justify-center pt-16 sm:justify-start">
         <ProjectFilter value={filter} onChange={setFilter} />
       </div>

@@ -1,6 +1,5 @@
 import type { Project } from "@/data/projects";
-import { ProjectCard } from "./ProjectCard";
-import { ScrollReveal } from "./ScrollReveal";
+import { ProjectDeck } from "./ProjectDeck";
 import { SectionHeading } from "./SectionHeading";
 
 interface ProjectSectionProps {
@@ -28,13 +27,7 @@ export function ProjectSection({
         {projects.length === 0 ? (
           <p className="mt-12 label-tag">{emptyLabel}</p>
         ) : (
-          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {projects.map((project) => (
-              <ScrollReveal key={project.id} y={20} x={0} className="h-full">
-                <ProjectCard project={project} />
-              </ScrollReveal>
-            ))}
-          </div>
+          <ProjectDeck projects={projects} />
         )}
       </div>
     </section>

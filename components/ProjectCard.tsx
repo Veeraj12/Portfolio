@@ -1,23 +1,29 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight, Github, GitBranch, ChevronDown } from "lucide-react";
 import type { Project } from "@/data/projects";
 import { techRegistry } from "@/data/tech-icons";
+import { useCardGlow } from "./useCardGlow";
 
 export function ProjectCard({ project }: { project: Project }) {
+  const cardRef = useCardGlow<HTMLElement>();
+  const reducedMotion = useReducedMotion();
+
   return (
     <motion.article
+      ref={cardRef}
       initial="rest"
-      whileHover="hover"
+      whileHover={reducedMotion ? undefined : "hover"}
       animate="rest"
       style={{ transformPerspective: 1000 }}
       variants={{
-        rest: { y: 0, rotateX: 0, rotateY: 0 },
-        hover: { y: -3, rotateX: 1, rotateY: -1 },
+        rest: { y: 0, scale: 1 },
+        hover: { y: -4, scale: 1.012 },
       }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="group relative flex h-full flex-col rounded border border-border bg-surface p-5 transition-colors duration-300 ease-engineered hover:border-accent/60 sm:p-6"
+      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      data-featured={project.featured ? "true" : undefined}
+      className="card-ambient group relative flex h-full min-h-[20rem] flex-col rounded border border-border bg-surface p-5 sm:p-6 md:min-h-[22rem] xl:min-h-[24rem]"
     >
       {project.relation && (
         <div className="mb-3 flex items-center gap-1.5 label-tag text-signal">

@@ -23,6 +23,7 @@ export function Hero() {
   return (
     <section
       id="home"
+      data-ambient-zone
       className="relative overflow-hidden border-b border-border"
     >
       <motion.div

@@ -7,10 +7,12 @@ import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { AdventurePortalEntry } from "@/components/AdventurePortalEntry";
 import { ArrivalFade } from "@/components/adventure/ui/ArrivalFade";
+import { CursorAmbience } from "@/components/CursorAmbience";
 
 export default function Home() {
   return (
     <ArrivalFade>
+      <CursorAmbience />
       <Navbar />
       <main>
         <Hero />

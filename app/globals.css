@@ -289,3 +289,129 @@ body {
     animation: none;
   }
 }
+
+/* Cursor-responsive ambient light --------------------------------------- */
+/* One page-level light shared by the hero and project grid. The palette
+   triplet lives in `--glow-color` (written on :root by CursorAmbience), so
+   cards can inherit the exact same atmosphere as the background. */
+:root {
+  --glow-color: 139 92 246;
+}
+
+.cursor-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  --cursor-x: 50vw;
+  --cursor-y: 40vh;
+}
+
+.cursor-ambient[data-active="true"] {
+  opacity: 1;
+}
+
+.cursor-ambient-blob,
+.cursor-ambient-core {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  will-change: transform;
+}
+
+/* Soft, wide halo — the diffused "spotlight under glass". */
+.cursor-ambient-blob {
+  width: 760px;
+  height: 760px;
+  transform: translate3d(
+    calc(var(--cursor-x) - 380px),
+    calc(var(--cursor-y) - 380px),
+    0
+  );
+  background: radial-gradient(
+    circle closest-side,
+    rgb(var(--glow-color) / 0.16),
+    rgb(var(--glow-color) / 0.07) 45%,
+    transparent 72%
+  );
+}
+
+/* Tighter, brighter core that gives the halo depth without heavy blur. */
+.cursor-ambient-core {
+  width: 340px;
+  height: 340px;
+  transform: translate3d(
+    calc(var(--cursor-x) - 170px),
+    calc(var(--cursor-y) - 170px),
+    0
+  );
+  background: radial-gradient(
+    circle closest-side,
+    rgb(var(--glow-color) / 0.2),
+    rgb(var(--glow-color) / 0.08) 40%,
+    transparent 70%
+  );
+}
+
+/* On dark surfaces a screen blend reads as light rather than paint. */
+.dark .cursor-ambient-blob,
+.dark .cursor-ambient-core {
+  mix-blend-mode: screen;
+}
+
+/* Reusable project-card illumination ------------------------------------ */
+.card-ambient {
+  --card-x: 50%;
+  --card-y: 50%;
+  --card-glow-color: 139 92 246;
+  --card-strength: 0;
+  position: relative;
+  isolation: isolate;
+  transition: border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The cursor-following glow sits above the card surface but below content. */
+.card-ambient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: calc(var(--card-strength) * 0.9);
+  background: radial-gradient(
+    320px circle at var(--card-x) var(--card-y),
+    rgb(var(--card-glow-color) / 0.16),
+    transparent 62%
+  );
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-ambient:hover {
+    border-color: rgb(var(--card-glow-color) / 0.55);
+    box-shadow: 0 0 0 1px rgb(var(--card-glow-color) / 0.12),
+      0 22px 45px -24px rgb(var(--card-glow-color) / 0.5);
+  }
+
+  /* The featured card carries a stronger aura so priority work leads. */
+  .card-ambient[data-featured="true"]:hover {
+    border-color: rgb(var(--card-glow-color) / 0.75);
+    box-shadow: 0 0 0 1px rgb(var(--card-glow-color) / 0.22),
+      0 28px 55px -22px rgb(var(--card-glow-color) / 0.65);
+  }
+
+  .card-ambient[data-featured="true"]::before {
+    background: radial-gradient(
+      380px circle at var(--card-x) var(--card-y),
+      rgb(var(--card-glow-color) / 0.22),
+      transparent 62%
+    );
+  }
+}
