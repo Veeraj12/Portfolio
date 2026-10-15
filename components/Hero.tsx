@@ -34,7 +34,7 @@ export function Hero() {
         className="pointer-events-none absolute -right-24 top-16 h-72 w-72 rounded-full bg-accent/10 blur-3xl"
       />
 
-      <div className="container-lab relative py-24 sm:py-32">
+      <div className="container-lab relative pb-20 pt-0 sm:pb-28">
         <motion.div
           variants={container}
           initial="hidden"
@@ -49,7 +49,7 @@ export function Hero() {
             delay={0.04}
             stagger={0.05}
             spotlight
-            className="font-display text-2xl font-semibold tracking-tight text-fg sm:text-3xl"
+            className="mt-1 font-display text-2xl font-semibold tracking-tight text-fg sm:text-3xl"
             text="I'm Veeraj Panchal."
           />
 

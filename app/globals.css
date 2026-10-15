@@ -435,16 +435,22 @@ body {
 }
 
 /* "The Hanging Hello" ---------------------------------------------------- */
-/* A small greeting suspended above the name line. The stage reserves its space
-   from the first paint, so the entrance never shifts layout. Anchor + thread +
-   word are one coherent object: `.hg-pivot` rotates about the suspension point
-   and `.hg-bob` is translated down the thread. */
+/* A greeting suspended from the navbar's bottom edge. The hero sits directly
+   below the sticky navbar and this stage sits flush at the top of the hero, so
+   the thread's mount meets the bar. The stage reserves its space from first
+   paint, so the entrance never shifts layout. Each layer owns a single
+   transform: pivot rotates, bob holds the thread length, scale squashes about
+   the attachment point, and the stack rolls the word. */
 .hg-root {
   position: relative;
-  width: min(300px, 100%);
-  height: 148px;
-  margin-bottom: 0.25rem;
-  /* The interaction zone is this small stage only — never the whole hero. */
+  width: min(320px, 100%);
+  /* thread rest + one word row + clearance for the bounce overshoot */
+  height: calc(var(--hg-len) + var(--hg-line) + 10px);
+  --hg-len: 50px;
+  --hg-line: 34px;
+  --hg-anchor-x: 56px;
+  --hg-energy: 0;
+  /* The interaction zone is this stage only — never the whole hero. */
   touch-action: manipulation;
 }
 
@@ -457,9 +463,10 @@ body {
   pointer-events: none;
 }
 
-.hg-anchor {
+/* Small mount plate sitting on the seam with the navbar's bottom edge. */
+.hg-plate {
   fill: rgb(var(--accent));
-  filter: drop-shadow(0 0 3px rgb(var(--accent) / 0.7));
+  filter: drop-shadow(0 1px 3px rgb(var(--accent) / 0.6));
 }
 
 .hg-thread-path {
@@ -469,41 +476,48 @@ body {
   stroke-linecap: round;
 }
 
-/* Zero-size pivot sitting exactly on the suspension point. */
+/* Zero-size pivot on the suspension point; owns the pendulum rotation. */
 .hg-pivot {
   position: absolute;
-  top: 6px;
-  left: 50%;
+  top: 0;
+  left: var(--hg-anchor-x);
   width: 0;
   height: 0;
   transform-origin: 0 0;
   will-change: transform;
 }
 
-/* Hangs below the pivot; `translate(-50%, len)` centers the word under the
-   anchor so its width can change without ever moving the anchor. The CSS
-   transform is the resting position, used for SSR / no-JS; the layout effect
-   overrides it with the raised entrance pose before the first paint. */
+/* Hangs below the pivot; owns the thread length (the fall + swing radius).
+   `translate(-50%, len)` centres the word under the anchor so its width can
+   change without ever moving the anchor. The CSS transform here is the
+   resting pose, used for SSR / no-JS; the layout effect applies the raised
+   entrance pose before the first paint. */
 .hg-bob {
   position: absolute;
   top: 0;
   left: 0;
   width: max-content;
-  transform: translate(-50%, 58px);
+  transform: translate(-50%, 50px);
+  will-change: transform;
+  /* Faint, cursor-reactive glow while swinging. `--glow-color` is shared with
+     the page-level ambient light and `--hg-energy` is written each frame. */
+  text-shadow: 0 0 calc(3px + var(--hg-energy) * 8px)
+    rgb(var(--glow-color) / calc(var(--hg-energy) * 0.4));
+  transition: text-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Squash / stretch about the word's top-centre, so the thread attachment
+   point stays put while the word lands. */
+.hg-scale {
+  transform-origin: 50% 0;
   will-change: transform;
 }
 
 /* Fixed-height viewport that clips the odometer to a single visible row. */
 .hg-window {
   width: max-content;
-  height: 34px;
+  height: var(--hg-line);
   overflow: hidden;
-  /* Faint, cursor-reactive glow that only appears while the word is swinging.
-     `--glow-color` is shared with the page-level ambient light and
-     `--hg-energy` is written once per frame on `.hg-bob`. */
-  text-shadow: 0 0 calc(6px + var(--hg-energy, 0) * 16px)
-    rgb(var(--glow-color) / calc(var(--hg-energy, 0) * 0.55));
-  transition: text-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hg-stack {
@@ -517,11 +531,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 34px;
+  height: var(--hg-line);
   white-space: nowrap;
-  font-family: var(--font-display), var(--font-devanagari), var(--font-jp),
+  /* Latin uses the existing Inter (refined, and distinct from the geometric
+     display headline); non-Latin scripts fall through to their Noto faces. */
+  font-family: var(--font-sans), var(--font-devanagari), var(--font-jp),
     var(--font-kr), var(--font-tamil), ui-sans-serif, system-ui, sans-serif;
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: rgb(var(--fg));
@@ -529,17 +545,17 @@ body {
 
 @media (max-width: 640px) {
   .hg-root {
-    width: min(240px, 100%);
-    height: 132px;
+    width: min(280px, 100%);
+    --hg-anchor-x: 48px;
   }
 
   .hg-line {
-    font-size: 20px;
+    font-size: 19px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hg-window {
+  .hg-bob {
     text-shadow: none;
     transition: none;
   }
