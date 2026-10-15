@@ -48,12 +48,12 @@ const LEN_DAMP = 8.8; // thread spring damping -> one or two soft rebounds
 const SQUASH_AMOUNT = 0.16; // brief vertical compression on impact
 const SQUASH_K = 400; // squash recovery stiffness
 const SQUASH_C = 20; // squash recovery damping
-const TRIGGER_ANGLE = 0.18; // swing must cross this to roll the word
+const TRIGGER_ANGLE = 0.16; // swing must cross this to roll the word
 const REARM_ANGLE = 0.05; // must fall back inside this before re-arming
 const ROLL_COOLDOWN = 650; // ms between rolls, so each word stays readable
 const ACTIVE_WINDOW = 450; // ms: only freshly-driven swings may roll a word
-const VELOCITY_TO_OMEGA = 1.4; // cursor px/ms -> target angular velocity
-const VELOCITY_RESPONSE = 0.5; // how quickly the swing eases toward the target
+const VELOCITY_TO_OMEGA = 2.4; // cursor px/ms -> target angular velocity (higher = more sensitive)
+const VELOCITY_RESPONSE = 0.55; // how quickly the swing eases toward the target
 
 const clamp = (v: number, lo: number, hi: number) =>
   v < lo ? lo : v > hi ? hi : v;
@@ -288,8 +288,8 @@ export function HangingGreeting({ className }: { className?: string }) {
       const cx = rect.left + anchorX + len * Math.sin(theta);
       const cy = rect.top + ANCHOR_Y + len * Math.cos(theta) + LINE_H / 2;
       const prox = clamp(
-        1 - Math.hypot(e.clientX - cx, e.clientY - cy) / 200,
-        0.35,
+        1 - Math.hypot(e.clientX - cx, e.clientY - cy) / 260,
+        0.5,
         1,
       );
 

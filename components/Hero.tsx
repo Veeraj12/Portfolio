@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, ArrowDownRight, Github } from "lucide-react";
+import { ArrowRight, Github } from "lucide-react";
 import { AnimatedText } from "./AnimatedText";
 import { Button } from "./Button";
 import { HangingGreeting } from "./HangingGreeting";
@@ -67,7 +67,7 @@ export function Hero() {
             variants={item}
             className="mt-6 max-w-xl text-[17px] leading-relaxed text-muted"
           >
-          I build real-world applications, from architecting robust systems to exploring the mathematics that makes machines learn.
+            I follow the logic, question the assumptions, and build what survives both.
           </motion.p>
 
           <motion.ul variants={item} className="mt-8 flex flex-wrap gap-2">
@@ -89,10 +89,6 @@ export function Hero() {
             <Button href="#projects" variant="primary">
               View Projects
               <ArrowRight size={16} />
-            </Button>
-            <Button href="#architecture" variant="outline">
-              Explore Architecture
-              <ArrowDownRight size={16} />
             </Button>
             <a
               href="https://github.com/Veeraj12"
