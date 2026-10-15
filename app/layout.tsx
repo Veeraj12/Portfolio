@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import {
+  Noto_Sans_Devanagari,
+  Noto_Sans_JP,
+  Noto_Sans_KR,
+  Noto_Sans_Tamil,
+} from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -19,6 +25,40 @@ const mono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   weight: ["400", "500"],
+});
+
+// Non-Latin glyphs for the hanging greeting. These are the minimum assets
+// needed for correct Devanagari / Japanese / Korean / Tamil scripts. CJK fonts
+// are split into many files, so preloading is disabled (Next docs recommend
+// this for CJK) — the browser only fetches the ranges actually used.
+const devanagari = Noto_Sans_Devanagari({
+  subsets: ["devanagari"],
+  weight: "500",
+  variable: "--font-devanagari",
+  display: "swap",
+  preload: false,
+});
+
+const japanese = Noto_Sans_JP({
+  weight: "500",
+  variable: "--font-jp",
+  display: "swap",
+  preload: false,
+});
+
+const korean = Noto_Sans_KR({
+  weight: "500",
+  variable: "--font-kr",
+  display: "swap",
+  preload: false,
+});
+
+const tamil = Noto_Sans_Tamil({
+  subsets: ["tamil"],
+  weight: "500",
+  variable: "--font-tamil",
+  display: "swap",
+  preload: false,
 });
 
 const siteUrl = "https://veeraj.dev";
@@ -64,7 +104,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${display.variable} ${sans.variable} ${mono.variable}`}
+      className={`${display.variable} ${sans.variable} ${mono.variable} ${devanagari.variable} ${japanese.variable} ${korean.variable} ${tamil.variable}`}
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >

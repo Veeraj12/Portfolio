@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, ArrowDownRight, Github } from "lucide-react";
 import { AnimatedText } from "./AnimatedText";
 import { Button } from "./Button";
+import { HangingGreeting } from "./HangingGreeting";
 
 const capabilities = ["AI / ML", "Full-Stack", "System Design", "Automation"];
 
@@ -40,6 +41,8 @@ export function Hero() {
           animate="show"
           className="max-w-3xl"
         >
+          <HangingGreeting />
+
           <AnimatedText
             as="p"
             trigger="mount"

@@ -1,71 +1,57 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import type { ReactNode } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 
 interface ScrollRevealProps {
   children: ReactNode;
   className?: string;
-  /** Vertical travel (px) as the card scrolls into place. */
+  /** Vertical travel (px) as the card animates into place. */
   y?: number;
   /** Optional horizontal travel (px) — positive = slides in from the right. */
   x?: number;
+  /** Seconds to wait before this card animates in (for stagger). */
+  delay?: number;
   /**
-   * Viewport fractions (0 = top, 1 = bottom) where the reveal starts and ends.
-   * The card is hidden when its top edge sits at `start` and fully shown at
-   * `end`. Defaults reveal it as it rises from the bottom third to mid-screen.
+   * Viewport inset that decides when the card counts as "in view". A negative
+   * margin makes the card travel a little further before it triggers.
    */
-  start?: number;
-  end?: number;
+  margin?: string;
 }
 
 /**
- * Scroll-LINKED reveal for cards: opacity + translate driven directly by the
- * scroll position (framer's `useScroll` shares one passive scroll listener and
- * batches updates on rAF). Only `opacity`/`transform` are animated, so it stays
- * cheap. Because it tracks the scroll position rather than a one-shot trigger,
- * it eases back out naturally as the card leaves the viewport.
+ * Scroll-TRIGGERED reveal for cards: entering the viewport starts a smooth
+ * timed transition (opacity + translate), and leaving the viewport reverses it.
+ * The scroll position only decides WHEN to play — the animation itself is
+ * eased over time, not mapped to scroll pixels, so it never feels glued to the
+ * wheel.
  *
- * Reduced motion renders the children with no scroll-linked transform.
+ * Reduced motion renders a quick fade only, with no scroll-linked transform.
  */
 export function ScrollReveal({
   children,
   className,
   y = 32,
   x = 0,
-  start = 0.96,
-  end = 0.6,
+  delay = 0,
+  margin = "-12% 0px -12% 0px",
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: [`start ${start * 100}%`, `start ${end * 100}%`],
-  });
-
-  const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const translateY = useTransform(scrollYProgress, [0, 1], [y, 0]);
-  const translateX = useTransform(scrollYProgress, [0, 1], [x, 0]);
-
-  if (reducedMotion) {
-    return (
-      <div className={className} style={{ position: "relative" }}>
-        {children}
-      </div>
-    );
-  }
+  const hidden = reducedMotion ? { opacity: 0 } : { opacity: 0, y, x };
+  const shown = { opacity: 1, y: 0, x: 0 };
 
   return (
     <motion.div
-      ref={ref}
       className={className}
-      style={{
-        position: "relative",
-        opacity,
-        y: translateY,
-        x: translateX,
-        willChange: "opacity, transform",
+      style={{ position: "relative", willChange: "opacity, transform" }}
+      initial={hidden}
+      whileInView={shown}
+      viewport={{ once: false, margin }}
+      transition={{
+        duration: reducedMotion ? 0.2 : 0.7,
+        delay: reducedMotion ? 0 : delay,
+        ease: [0.16, 1, 0.3, 1],
       }}
     >
       {children}
