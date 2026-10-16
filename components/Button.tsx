@@ -13,6 +13,8 @@ interface BaseProps {
 interface ButtonAsLink extends BaseProps {
   href: string;
   external?: boolean;
+  /** When set, the link downloads the file instead of navigating to it. */
+  download?: string;
 }
 
 interface ButtonAsButton extends BaseProps,
@@ -38,7 +40,18 @@ export function Button(props: Props) {
   const { variant = "primary", className, children } = props;
 
   if ("href" in props && props.href) {
-    const { href, external } = props;
+    const { href, external, download } = props;
+    if (download) {
+      return (
+        <a
+          href={href}
+          download={download}
+          className={cn(base, variantClasses[variant], className)}
+        >
+          {children}
+        </a>
+      );
+    }
     if (external) {
       return (
         <a

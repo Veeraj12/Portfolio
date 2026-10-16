@@ -96,9 +96,16 @@ export function About() {
             </div>
           </div>
 
-          <div className="mt-10 flex justify-center">
+          <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Button href="/resume/veeraj-resume.pdf" external variant="outline">
-              Resume
+              View Resume
+            </Button>
+            <Button
+              href="/resume/veeraj-resume.pdf"
+              download="Veeraj-Panchal-Resume.pdf"
+              variant="ghost"
+            >
+              Download Resume
             </Button>
           </div>
         </div>
